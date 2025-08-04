@@ -1,0 +1,1 @@
+// 通用基类（如 BaseService、BaseEntity）
