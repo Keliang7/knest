@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Put, Delete, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+  Query,
+} from '@nestjs/common';
 import { AppService } from './app.service';
 
 @Controller()
@@ -22,7 +31,11 @@ export class AppController {
   }
 
   @Post('data')
-  addData(): string {
+  addData(
+    @Body() body: Record<string, any>,
+    @Query() query: Record<string, string>,
+  ): string {
+    console.log(body, query);
     return 'add data';
   }
 
