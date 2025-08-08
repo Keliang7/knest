@@ -12,6 +12,16 @@ import { ParseIntPipe } from '../../common/pipes/parse-int.pipe';
 import { CreateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'; // ✅ 你漏掉了这个
 
+/* 
+  这里既然都是用装饰器函数，调用service的服务，那么getProfile，getUserById等函数名还有什么作用吗
+
+  1. 可读性与维护性
+  2. Swagger 文档自动生成时会用到函数名（如果启用）
+  3. 调试时日志栈清晰
+  4. IDE 提示、跳转、重构更安全
+  5. 代码组织更清晰
+*/
+
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}

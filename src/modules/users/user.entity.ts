@@ -4,6 +4,7 @@ import {
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 
 export enum IDType {
@@ -47,4 +48,7 @@ export class User {
 
   @Column()
   signature: string;
+
+  @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true })
+  deletedAt: Date;
 }
