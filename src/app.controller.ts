@@ -7,18 +7,12 @@ import {
   Param,
   Body,
   Query,
-  UseFilters,
 } from '@nestjs/common';
 import { AppService } from './app.service';
-import { TestService } from './test.service';
-import { HttpExceptionFilter } from './exception/http-exception.filter';
 
 @Controller()
 export class AppController {
-  constructor(
-    private readonly appService: AppService,
-    private readonly testService: TestService,
-  ) {}
+  constructor(private readonly appService: AppService) {}
 
   @Get()
   getHello(): string {
@@ -53,11 +47,5 @@ export class AppController {
   @Delete('data')
   deleteData(): string {
     return 'delete data';
-  }
-
-  @Get('test/:id')
-  @UseFilters(HttpExceptionFilter)
-  getTest(@Param() param): string {
-    return this.testService.getTest(param);
   }
 }

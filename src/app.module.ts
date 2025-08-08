@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
+    // 这里放到全局模块中，这样就可以在整个应用中使用了
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'keliang7.cn',
@@ -13,7 +14,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       username: 'root',
       password: 'LAq1234567',
       database: 'knest',
-      autoLoadEntities: true,
+      autoLoadEntities: true, // 自动加载实体    entities: [__dirname + '/**/*.entity{.ts,.js}'], // 实体文件的路径
       synchronize: true, // 生产环境设为 false！
     }),
     UserModule,

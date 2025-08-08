@@ -12,7 +12,7 @@ import { ParseIntPipe } from '../../common/pipes/parse-int.pipe';
 import { CreateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'; // ✅ 你漏掉了这个
 
-@Controller('users')
+@Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -24,11 +24,11 @@ export class UserController {
 
   @Get(':id')
   getUserById(@Param('id', ParseIntPipe) id: number) {
-    return this.userService.getUserById(id);
+    return this.userService.findOne(id);
   }
 
   @Post()
-  create(@Body() dto: CreateUserDto) {
-    return this.userService.create(dto);
+  create(@Body() createUserDto: CreateUserDto) {
+    return this.userService.create(createUserDto);
   }
 }

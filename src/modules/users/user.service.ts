@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import type { Repository } from 'typeorm';
 import { User } from './user.entity';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UserService {
@@ -9,12 +10,13 @@ export class UserService {
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
   ) {}
-  getUserById(id: number) {
-    return `User with id ${id}`;
+  findOne(id: number): Promise<User> {
+    return this.userRepo.findOne({ where: { id } });
   }
 
-  create(data: any) {
-    return `User created with data ${JSON.stringify(data)}`;
+  async create(data: CreateUserDto): Promise<User> {
+    const user = this.userRepo.create(data); // 创建实体实例（不插入数据库）
+    return this.userRepo.save(user); // 插入到数据库
   }
 
   async findAll(): Promise<User[]> {
