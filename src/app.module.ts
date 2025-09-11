@@ -3,6 +3,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './modules/users/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
+import * as Joi from 'joi';
+import jwtConfig from './config/jwt.config';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -17,6 +21,16 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       autoLoadEntities: true, // 自动加载实体    entities: [__dirname + '/**/*.entity{.ts,.js}'], // 实体文件的路径
       synchronize: true, // 生产环境设为 false！
     }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      cache: true,
+      load: [jwtConfig],
+      validationSchema: Joi.object({
+        JWT_SECRET: Joi.string().min(32).required(),
+        JWT_EXPIRES_IN: Joi.string().default('1d'),
+      }),
+    }),
+    AuthModule,
     UserModule,
   ],
   controllers: [AppController],

@@ -1,19 +1,21 @@
+// src/modules/auth/strategies/jwt.strategy.ts
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(config: ConfigService) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), // 从 Bearer Token 中提取
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      secretOrKey: config.get<string>('jwt.secret'),
       ignoreExpiration: false,
-      secretOrKey: 'demo-secret', // 👈 最简单的写死 secret（生产建议放到 .env）
     });
   }
 
   async validate(payload: any) {
-    // payload 是你签发 token 时 encode 的内容
+    // 这里可查库补充权限/状态等。返回值会挂到 req.user
     return { userId: payload.sub, username: payload.username };
   }
 }
