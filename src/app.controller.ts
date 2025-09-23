@@ -12,8 +12,8 @@ import { AppService } from './app.service';
 
 @Controller()
 export class AppController {
+  // 获取DI中具体的Class类的实例 => 告诉DI系统他们之间的依赖关系
   constructor(private readonly appService: AppService) {}
-
   @Get()
   getHello(): string {
     return this.appService.getHello();

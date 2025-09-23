@@ -33,7 +33,9 @@ import { DatabaseModule } from './database/database.module';
     AuthModule,
     UserModule,
   ],
+  // 告诉nestjs 把下面的Class类放到你的DI中进行初始化
   controllers: [AppController],
+  // 告诉nestjs 下面的这个Class我需要注入到其他的地方去使用
   providers: [AppService],
 })
 export class AppModule {}
