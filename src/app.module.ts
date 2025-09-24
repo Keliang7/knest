@@ -14,7 +14,7 @@ import { DatabaseModule } from './database/database.module';
     ConfigModule.forRoot({
       isGlobal: true, // 是否全局 这样就不需要在其他的module中导入了
       cache: true,
-      load: [jwtConfig],
+      load: [jwtConfig], // 额外的加载配置文件
       validationSchema: Joi.object({
         // jwt
         JWT_SECRET: Joi.string().min(32).required(),
