@@ -10,7 +10,9 @@ import {
 import { UserService } from './user.service';
 import { ParseIntPipe } from '../../common/pipes/parse-int.pipe';
 import { CreateUserDto } from './dto/create-user.dto';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'; // ✅ 你漏掉了这个
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { ConfigService } from '@nestjs/config';
+import { ConfigKeys } from 'src/common/constants/config-keys.enum';
 
 /* 
   这里既然都是用装饰器函数，调用service的服务，那么getProfile，getUserById等函数名还有什么作用吗
@@ -24,7 +26,10 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'; // ✅ 你漏
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly configService: ConfigService,
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
@@ -34,6 +39,8 @@ export class UserController {
 
   @Get(':id')
   getUserById(@Param('id', ParseIntPipe) id: number) {
+    const db = this.configService.get(ConfigKeys.DB_NAME);
+    console.log(db);
     return this.userService.findOne(id);
   }
 

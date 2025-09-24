@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './modules/users/user.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config'; // 配置模块
 import * as Joi from 'joi';
 import jwtConfig from './config/jwt.config';
 import { AuthModule } from './modules/auth/auth.module';
@@ -10,8 +10,9 @@ import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [
+    // 配置模块，forRoot是去读取.env文件
     ConfigModule.forRoot({
-      isGlobal: true,
+      isGlobal: true, // 是否全局 这样就不需要在其他的module中导入了
       cache: true,
       load: [jwtConfig],
       validationSchema: Joi.object({
