@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './modules/users/user.module';
 import { ConfigModule } from '@nestjs/config'; // 配置模块
-import * as Joi from 'joi';
+import * as Joi from 'joi'; // 验证环境变量的模块 参考当前目录下readme.md
 import jwtConfig from './config/jwt.config';
 import { AuthModule } from './modules/auth/auth.module';
 import { DatabaseModule } from './database/database.module';
@@ -15,6 +15,7 @@ import { DatabaseModule } from './database/database.module';
       isGlobal: true, // 是否全局 这样就不需要在其他的module中导入了
       cache: true,
       load: [jwtConfig], // 额外的加载配置文件
+      // 说明：请看当前目录下readme.md
       validationSchema: Joi.object({
         // jwt
         JWT_SECRET: Joi.string().min(32).required(),
