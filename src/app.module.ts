@@ -14,6 +14,7 @@ import { DatabaseModule } from './database/database.module';
     ConfigModule.forRoot({
       isGlobal: true, // 是否全局 这样就不需要在其他的module中导入了
       cache: true,
+      envFilePath: [`.env.${process.env.NODE_ENV}`, '.env'],
       load: [jwtConfig], // 额外的加载配置文件
       // 说明：请看当前目录下readme.md
       validationSchema: Joi.object({

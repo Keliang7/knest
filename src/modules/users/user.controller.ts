@@ -39,10 +39,8 @@ export class UserController {
 
   @Get(':id')
   getUserById(@Param('id', ParseIntPipe) id: number) {
-    const db = this.configService.get(ConfigKeys.DB_NAME);
-    const env = this.configService.get(ConfigKeys.NODE_ENV);
-    const test = this.configService.get('EMAIL_HOST');
-    console.log(db, env, test);
+    const db = this.configService.get(ConfigKeys.DB_PORT);
+    console.log(db);
     return this.userService.findOne(id);
   }
 
