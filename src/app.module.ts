@@ -7,6 +7,7 @@ import * as Joi from 'joi'; // 验证环境变量的模块 参考当前目录下
 import jwtConfig from './config/jwt.config';
 import { AuthModule } from './modules/auth/auth.module';
 import { DatabaseModule } from './database/database.module';
+import { LoggerModule } from './common/logger/logger.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { DatabaseModule } from './database/database.module';
           .default('development'),
       }),
     }),
+    LoggerModule,
     DatabaseModule,
     AuthModule,
     UserModule,

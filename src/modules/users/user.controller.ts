@@ -6,7 +6,6 @@ import {
   Post,
   UseGuards,
   Request,
-  Logger,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ParseIntPipe } from '../../common/pipes/parse-int.pipe';
@@ -14,6 +13,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { ConfigService } from '@nestjs/config';
 import { ConfigKeys } from 'src/common/constants/config-keys.enum';
+import { LoggerService } from '../../common/logger/logger.service';
 
 /* 
   这里既然都是用装饰器函数，调用service的服务，那么getProfile，getUserById等函数名还有什么作用吗
@@ -27,12 +27,13 @@ import { ConfigKeys } from 'src/common/constants/config-keys.enum';
 
 @Controller('user')
 export class UserController {
-  private logger = new Logger(UserController.name); // 局部初始化一个logger
+  // private logger = new Logger(UserController.name); // 局部初始化一个logger
   constructor(
     private readonly userService: UserService,
     private readonly configService: ConfigService,
+    private readonly logger: LoggerService,
   ) {
-    this.logger.warn('UserController initialized');
+    // this.logger.warn('UserController initialized');
   }
 
   @UseGuards(JwtAuthGuard)
@@ -44,8 +45,8 @@ export class UserController {
   @Get(':id')
   getUserById(@Param('id', ParseIntPipe) id: number) {
     this.logger.warn(`Fetching user with id: ${id}`);
-    // const db = this.configService.get(ConfigKeys.DB_PORT);
-    // console.log(db);
+    const db = this.configService.get(ConfigKeys.DB_PORT);
+    console.log(db);
     return this.userService.findOne(id);
   }
 
@@ -54,3 +55,23 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 }
+
+/* 
+  import { Controller, Get } from '@nestjs/common';
+import { LoggerService } from '@/common/logger/logger.service';
+
+@Controller('user')
+export class UserController {
+  constructor(private readonly logger: LoggerService) {}
+
+  @Get()
+  findAll() {
+    this.logger.log('Fetching all users', 'UserController');
+    this.logger.warn('This is a warning');
+    this.logger.error('Something went wrong', 'stacktrace...', 'UserController');
+
+    return { message: 'OK' };
+  }
+}
+
+*/
