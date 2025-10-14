@@ -1,46 +1,95 @@
-为什么要使用日志？
-1. 方便定位问题
-2. 方便分析性能
-3. 方便监控
+part2 Nest内置与自定义日志
 
-常见日志及获取(记录)方式
+## 内置日志系统
 
+NestJS 提供了内置日志系统，可以通过 `NestFactory.create()` 的第二个参数控制是否启用内置日志。
 
-第三方日志库：
-1. winston // 官方推荐 功能强大，但是配置复杂
-2. pino
+示例：
 
+```js
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule, { logger: false });
+  app.useGlobalPipes(new ValidationPipe());
+  await app.listen(process.env.PORT ?? 3000);
+}
+bootstrap();
+```
 
-通用业务系统日志系统配置(学习定时任务的时候再补充)
+### `logger` 参数说明
 
-个别文件说明：
-logger.interceptor.ts //请求级别的日志
-logger.middleware.ts // 可选：http请求日志中间件
-logger.constants.ts // 定义日志级别或标签
+| 类型                           | 说明                                     |
+| ------------------------------ | ---------------------------------------- |
+| `LoggerService`                 | 自定义日志服务实例                       |
+| `LogLevel[]`                   | 指定启用的日志级别，如 `['error', 'warn']` |
+| `false`                        | 禁用内置日志                             |
 
+### 日志级别
 
-日志等级
-1. log 通用日志，按需进行记录
-2. warning 警告日志，比如尝试多次惊醒数据库操作
-3. error 严重日志，比如：
-    1. 数据库操作失败
-    2. 接口请求失败
-    3. 系统异常
-4. debug 调试日志，比如：
-    1. 接口请求参数
-    2. 接口请求结果
-    3. 接口请求耗时
-5. verbose 详细日志，所有的操作与详细信息（非必要不打印）
+| 级别    | 说明                 |
+| ------- | -------------------- |
+| log     | 通用日志             |
+| error   | 错误日志             |
+| warn    | 警告日志             |
+| debug   | 调试日志             |
+| verbose | 详细日志（非必要不打印） |
 
+---
 
+## 自定义日志
 
-日志功能分类：
-1. 错误日志 // 方便定位问题，
-2. 调试日志 // 方便开发
-3. 请求日志 // 记录铭感信息
+可以通过传入自定义日志级别数组或实现 `LoggerService` 来定制日志行为。
 
-日志记录位置
-1. 控制台 // 方便开发
-2. 文件 // 方便回溯与追踪(24小时滚动)
-3. 数据库 // 敏感操作，敏感数据记录
-4. 第三方日志服务
+示例：
+
+```js
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { ValidationPipe, Logger } from '@nestjs/common';
+
+async function bootstrap() {
+  const logger = new Logger();
+  const app = await NestFactory.create(AppModule, {
+    logger: ['error', 'warn'],
+  });
+  app.useGlobalPipes(new ValidationPipe());
+  await app.listen(process.env.PORT ?? 3000);
+  logger.warn(`Server is running on port ${process.env.PORT ?? 3000}`);
+}
+bootstrap();
+```
+
+---
+
+## 在 Controller 中使用日志
+
+在 Controller 内部可以局部初始化 `Logger`，便于输出相关日志信息。
+
+示例：
+
+```js
+@Controller('user')
+export class UserController {
+  private logger = new Logger(UserController.name); // 局部初始化一个 logger
+
+  constructor(
+    private readonly userService: UserService,
+    private readonly configService: ConfigService,
+  ) {
+    this.logger.warn('UserController initialized');
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  getProfile(@Request() req) {
+    return req.user;
+  }
+
+  @Get(':id')
+  getUserById(@Param('id', ParseIntPipe) id: number) {
+    this.logger.warn(`Fetching user with id: ${id}`);
+    // const db = this.configService.get(ConfigKeys.DB_PORT);
+    // console.log(db);
+    return this.userService.findOne(id);
+  }
+}
+```
