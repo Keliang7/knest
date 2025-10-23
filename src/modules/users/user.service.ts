@@ -1,9 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import type { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UserService {
@@ -16,6 +21,14 @@ export class UserService {
     return this.userRepo.findOne({ where: { id } });
   }
 
+  async findByUsername(username: string) {
+    return this.userRepo.findOne({
+      where: { username },
+      select: ['id', 'username', 'password'],
+      // 👈 必须显式选出 password
+    });
+  }
+
   // 查找包括已软删除的用户（withDeleted: true 会包含被软删除的数据）
   async findOneWithDeleted(id: number): Promise<User | null> {
     return this.userRepo.findOne({
@@ -25,13 +38,35 @@ export class UserService {
   }
 
   async create(data: CreateUserDto): Promise<User> {
-    const user = this.userRepo.create(data); // 创建一个新的用户实体实例 但不保存到数据库中
-    return this.userRepo.save(user); // 保存用户实体到数据库中
+    const existingUser = await this.userRepo.findOne({
+      where: { username: data.username },
+    });
+    if (existingUser) {
+      throw new ConflictException('Username already exists');
+    }
+    const hashedPassword = await bcrypt.hash(data.password, 10);
+    const user = this.userRepo.create({
+      ...data,
+      password: hashedPassword,
+    }); // 创建一个新的用户实体实例 但不保存到数据库中
+    const savedUser = await this.userRepo.save(user); // 保存用户实体到数据库中
+    // 不返回密码字段
+    const { password: _removed, ...result } = savedUser;
+    return result as User;
   }
 
   async update(id: number, data: UpdateUserDto): Promise<User> {
-    await this.userRepo.update(id, data); // 使用 TypeORM 的 update 方法更新用户数据
-    return this.findOne(id); // 返回更新后的用户数据
+    const user = await this.userRepo.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    if (data.password) {
+      data.password = await bcrypt.hash(data.password, 10);
+    }
+    this.userRepo.merge(user, data);
+    const updatedUser = await this.userRepo.save(user);
+    const { password: _removed, ...result } = updatedUser;
+    return result as User;
   }
 
   // 软删除用户（保留数据库记录，将 deleted_at 字段设置为当前时间）

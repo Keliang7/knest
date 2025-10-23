@@ -54,6 +54,14 @@ export class UserController {
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
+
+  @Post(':id')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateUserDto: Partial<CreateUserDto>,
+  ) {
+    return this.userService.update(id, updateUserDto);
+  }
 }
 
 /* 

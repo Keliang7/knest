@@ -7,6 +7,7 @@ import jwtConfig from 'src/config/jwt.config';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { UserModule } from '../users/user.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { AuthService } from './auth.service';
         signOptions: { expiresIn: config.get<string>('jwt.expiresIn') },
       }),
     }),
+    UserModule,
   ],
   controllers: [AuthController],
   providers: [JwtStrategy, AuthService], // 本模块可以使用
