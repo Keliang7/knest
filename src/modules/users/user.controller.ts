@@ -13,7 +13,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { ConfigService } from '@nestjs/config';
 import { ConfigKeys } from 'src/common/constants/config-keys.enum';
-import { LoggerService } from '../../common/logger/logger.service';
+import { LoggerService } from '@/common/logger/logger.service';
 
 /* 
   这里既然都是用装饰器函数，调用service的服务，那么getProfile，getUserById等函数名还有什么作用吗
